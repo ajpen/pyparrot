@@ -23,13 +23,14 @@ import inspect
 #Groundcam Imports
 from ftplib import FTP
 import tempfile
+import sys
 try:
     import cv2
     OpenCVAvailable = True
-    print("OpenCVAvailable is %s" % OpenCVAvailable)
+    print("OpenCVAvailable is %s" % OpenCVAvailable, file=sys.stderr)
 except:
     OpenCVAvailable = False
-    print("OpenCVAvailable is %s" % OpenCVAvailable)
+    print("OpenCVAvailable is %s" % OpenCVAvailable, file=sys.stderr)
 
 class MinidroneSensors:
     """
@@ -98,7 +99,7 @@ class MinidroneSensors:
         #print("updating sensor %s" % name)
         #print(value)
         if (name is None):
-            print("Error empty sensor")
+            print("Error empty sensor", file=sys.stderr)
             return
 
 
@@ -239,7 +240,7 @@ class MamboGroundcam:
         #    login = self.ftp.login()
         #    print("FTP login success is %s" % login)
         #except:
-        print("ERROR: ftp login is disabled by parrot firmware 3.0.25 and 26.  Groundcam will not work.")
+        print("ERROR: ftp login is disabled by parrot firmware 3.0.25 and 26.  Groundcam will not work.", file=sys.stderr)
         self.ftp = None
 
         # get the path for the config files
@@ -248,11 +249,11 @@ class MamboGroundcam:
         if (shortPathIndex == -1):
             # handle Windows paths
             shortPathIndex = fullPath.rfind("\\")
-        print(shortPathIndex)
+        print(shortPathIndex, file=sys.stderr)
         shortPath = fullPath[0:shortPathIndex]
         self.imagePath = join(shortPath, "images")
         self.storageFile = join(self.imagePath, "groundcam.jpg")
-        print(self.storageFile)
+        print(self.storageFile, file=sys.stderr)
         #self.storageFile = tempfile.NamedTemporaryFile()
 
     def _close(self):
@@ -294,7 +295,7 @@ class MamboGroundcam:
             else:
                 return filename
         except Exception as e:
-            print(e)
+            print(e, sys.stderr)
             return False
 
     def _delete_file(self, filename):
@@ -495,8 +496,8 @@ class Minidrone:
         """
         fixed_direction = direction.lower()
         if (fixed_direction not in ("front", "back", "right", "left")):
-            print("Error: %s is not a valid direction.  Must be one of %s" % direction, "front, back, right, or left")
-            print("Ignoring command and returning")
+            print("Error: %s is not a valid direction.  Must be one of %s" % direction, "front, back, right, or left", file=sys.stderr)
+            print("Ignoring command and returning", file=sys.stderr)
             return
 
         (command_tuple, enum_tuple) = self.command_parser.get_command_tuple_with_enum("minidrone",
@@ -521,10 +522,10 @@ class Minidrone:
         degrees = int(degrees)
         if (degrees > 180):
             degrees = 180
-            print("Degrees too large: setting to 180")
+            print("Degrees too large: setting to 180", file=sys.stderr)
         elif (degrees < -180):
             degrees = -180
-            print("Degrees too large and negative: setting to -180")
+            print("Degrees too large and negative: setting to -180", file=sys.stderr)
 
         command_tuple = self.command_parser.get_command_tuple("minidrone", "Animations", "Cap")
         return self.drone_connection.send_turn_command(command_tuple, degrees)
@@ -550,7 +551,7 @@ class Minidrone:
         if self.use_wifi:
             list = self.groundcam.get_groundcam_pictures_names()
             if len(list) > 35: #if more than 35 pictures on the Mambo delete all
-                print("deleting")
+                print("deleting", file=sys.stderr)
                 for file in list:
                     self.groundcam._delete_file(file)
 
@@ -665,7 +666,7 @@ class Minidrone:
         """
 
         if (value < 0):
-            print("Can't set a negative max vertical speed.  Setting to 1 m/s instead.")
+            print("Can't set a negative max vertical speed.  Setting to 1 m/s instead.", file=sys.stderr)
             value = 1
 
         command_tuple = self.command_parser.get_command_tuple("minidrone", "SpeedSettings", "MaxVerticalSpeed")
@@ -682,7 +683,7 @@ class Minidrone:
         """
 
         if (value < 0):
-            print("Can't set a negative max horizontal speed.  Setting to 1 m/s instead.")
+            print("Can't set a negative max horizontal speed.  Setting to 1 m/s instead.", file=sys.stderr)
             value = 1
 
         command_tuple = self.command_parser.get_command_tuple("minidrone", "PilotingSettings", "MaxTilt")
@@ -793,8 +794,8 @@ class Swing(Minidrone):
         :return:
         """
         if (mode not in ('quadricopter', 'plane_forward', 'plane_backward')):
-            print("Error: %s is not a valid value. The value must be: quadricopter, plane_forward, plane_backward" % mode)
-            print("Ignoring command and returning")
+            print("Error: %s is not a valid value. The value must be: quadricopter, plane_forward, plane_backward" % mode, file=sys.stderr)
+            print("Ignoring command and returning", file=sys.stderr)
             return
 
         self.set_plane_gear_box(self.sensors.plane_gear_box)
@@ -811,8 +812,8 @@ class Swing(Minidrone):
         :return:
         """
         if (state not in ('gear_1', 'gear_2', 'gear_3')):
-            print("Error: %s is not a valid value. The value must be: gear_1, gear_2, gear_3" % state)
-            print("Ignoring command and returning")
+            print("Error: %s is not a valid value. The value must be: gear_1, gear_2, gear_3" % state, file=sys.stderr)
+            print("Ignoring command and returning", file=sys.stderr)
             return
 
         (command_tuple, enum_tuple) = self.command_parser.get_command_tuple_with_enum("minidrone", "Piloting", "PlaneGearBox", state)
